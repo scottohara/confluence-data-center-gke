@@ -129,9 +129,9 @@ kubectl get pods -o wide
 
 ### Complete first run setup (time bomb license, db setup etc.)
 
-Point your web browser at http://<external IP address>, and you should (hopefully) see the Confluence setup page.
+Point your web browser at `http://<external IP address>`, and you should (hopefully) see the Confluence setup page.
 
-When prompted for a license, if you don't have a valid Confluence Data Center license (or an active trial license); you can use a [timebomb license](https://developer.atlassian.com/platform/marketplace/timebomb-licenses-for-testing-server-apps/). Find "10 user Confluence Data Center license, expires in 3 hours" and copy/paste the license key.
+When prompted for a license, if you don't have a valid Confluence Data Center license (or an active trial license); you can use a [timebomb license](https://developer.atlassian.com/platform/marketplace/timebomb-licenses-for-testing-server-apps/). Find the "10 user Confluence Data Center license, expires in 3 hours" and copy/paste the license key.
 
 Give your cluster an appropriate name.
 
@@ -145,7 +145,7 @@ Continue through the setup process until the end. If all went well, you should h
 
 The second (and subsequent) Confluence nodes need a copy of the configuration from the initial node.
 
-The pod configuration is setup to look for a `confluence.cfg.xml.template` file in the shared home, so the first step is to copy the config from the first node, using the following commands:
+The pod configuration is setup to look for a `confluence.cfg.xml.template` file in the shared home, so the first step is to create this template by copying the config from the first Confluence node, using the following commands:
 
 ```bash
 kubectl exec confluence-0 -- cp /var/atlassian/application-data/confluence/confluence.cfg.xml /var/atlassian/application-data/shared/confluence.cfg.xml.template
