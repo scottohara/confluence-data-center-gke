@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: confluence
+spec:
+  selector:
+    matchLabels:
+      app: confluence
+  serviceName: "confluence"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: confluence
+    spec:
+      containers:
+        - name: confluence
+          image: atlassian/confluence-server:6.13.0
+          ports:
+            - containerPort: 8090
+            - containerPort: 8091
+          envFrom:
+            - configMapRef:
+                name: confluence-config
+          volumeMounts:
+            - mountPath: /var/atlassian/application-data/confluence
+              name: local-home
+            - mountPath: /var/atlassian/application-data/shared
+              name: shared-home
+      initContainers:
+        - name: copy-config-template
+          image: busybox
+          command:
+            - sh
+            - "-c"
+            - >
+              if [[ -f /var/atlassian/application-data/shared/confluence.cfg.xml.template ]]; then
+                cp /var/atlassian/application-data/shared/confluence.cfg.xml.template /var/atlassian/application-data/confluence/confluence.cfg.xml
+                chmod 777 /var/atlassian/application-data/confluence/confluence.cfg.xml
+              fi
+          volumeMounts:
+            - mountPath: /var/atlassian/application-data/confluence
+              name: local-home
+            - mountPath: /var/atlassian/application-data/shared
+              name: shared-home
+      volumes:
+        - name: shared-home
+          nfs:
+            path: "/data"
+            server: 10.128.0.5
+  volumeClaimTemplates:
+    - metadata:
+        name: local-home
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 100Mi

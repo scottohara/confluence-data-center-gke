@@ -1,0 +1,20 @@
+      - name: inject-pod-ip
+          image: giantswarm/tiny-tools
+          command:
+            - /bin/sh
+            - -c
+            - >
+              set -x;
+
+              cacert="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+              token="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
+              
+              curl --cacert $cacert --header "Authorization: Bearer $token" \
+                https://kubernetes.default.srv/api/v1/namespaces/default/endpoints/confluence \
+                  | jq -r '.subsets[].addresses | length'
+              
+              if [[ -f /var/atlassian/application-data/shared/confluence.cfg.xml.template ]]; then
+                sed -E '/confluence\.cluster\.peers\">(.*)</s//confluence.cluster.peers\">\1,$POD_IP</' -i /var/atlassian/application-data/shared/confluence.cfg.xml.template; else touch /var/atlassian/application-data/shared/confluence.cfg.xml.template; fi
+          volumeMounts:
+            - mountPath: /var/atlassian/application-data/shared
+              name: shared-home
