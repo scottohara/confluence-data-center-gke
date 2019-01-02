@@ -30,7 +30,7 @@ Overview
 Step-by-step
 ===========
 
-###### Create a new Kubernetes cluster in GKE
+### Create a new Kubernetes cluster in GKE
 
 (Assumes you already have a Google Cloud Platform account & project created, and you have the `gcloud` CLI installed)
 
@@ -43,7 +43,7 @@ At the time of writing, this means a 3-node, 1 x vCPU, 3.75Gb RAM, Kubernetes v1
 
 The command also automatically reconfigures your `kubectl` to point to the newly created cluster.
 
-###### Deploy a single-node file server
+### Deploy a single-node file server
 
 Most public Kubernetes-as-a-service platforms don't support shared, writable filesystems (i.e. a volume that can be mounted by multiple running pods, and allow all pods to write to it); or if they do, they're very expensive.
 
@@ -70,7 +70,7 @@ volumes:
     server: PASTE IP ADDRESS HERE
 ```
 
-###### Deploy k8s resources necessary to run a postgres database
+### Deploy k8s resources necessary to run a postgres database
 
 The YAML files in the `database` folder can be applied with a single command:
 
@@ -83,7 +83,7 @@ kubectl apply -f database
 `service.yaml` creates a "ClusterIP" service, allowing each Confluence node to access the database on port 5432.
 `deployment.yaml` creates a single instance of postgres 11, using the persistent volume above. 
 
-###### Deploy a load balancer service
+### Deploy a load balancer service
 
 A service of type "LoadBalancer" sits in front of the Confluence nodes, and allows access to the cluster on http://<external IP address>
 
@@ -113,7 +113,7 @@ data:
   CATALINA_CONNECTOR_PROXYPORT: "80"
 ```
 
-###### Deploy the first Confluence Data Center node
+### Deploy the first Confluence Data Center node
 
 The first Confluence node can be created with a single command:
 
@@ -127,7 +127,7 @@ It will take a few minutes for GKE to initialise and run the pod, so keep checki
 kubectl get pods -o wide
 ```
 
-###### Complete first run setup (time bomb license, db setup etc.)
+### Complete first run setup (time bomb license, db setup etc.)
 
 Point your web browser at http://<external IP address>, and you should (hopefully) see the Confluence setup page.
 
@@ -141,7 +141,7 @@ For the database setup, the server/address is `postgres`, the port is 5432, the 
 
 Continue through the setup process until the end. If all went well, you should have a fully functioning (albeit single node) Confluence Data Center instance running. You can check that it is a Data Center instance by going to the Admin section and scrolling to down to the Cluster details.
 
-###### Scaling up to a second node
+### Scaling up to a second node
 
 The second (and subsequent) Confluence nodes need a copy of the configuration from the initial node.
 
@@ -166,7 +166,7 @@ Then, back in the Confluence Admin page, check the Clusters page again and you s
 
 You will get a 3rd/4th node, but one of the initial nodes will instantly die; and an endless loop of pods starting and other pods terminating will occur.
 
-###### Scaling up to a third node (NOTE: currently doesn't work)
+### Scaling up to a third node (NOTE: currently doesn't work)
 
 Open an SSH session to your single-node NFS server (via Cloud Console), and update the `confluence.cluster.peers` property in `confluence.cfg.xml.template` with the IP address of the `confluence-1` pod.
 
@@ -176,7 +176,7 @@ Then scaling the cluster to a third node is the same as the second node, e.g.
 kubectl scale --replicas=3 statefulset/confluence
 ```
 
-###### Scaling up to a fourth node (NOTE: currently doesn't work)
+### Scaling up to a fourth node (NOTE: currently doesn't work)
 
 Open an SSH session to your single-node NFS server (via Cloud Console), and update the `confluence.cluster.peers` property in `confluence.cfg.xml.template` with the IP address of the `confluence-2` pod.
 
@@ -186,7 +186,7 @@ Then scaling the cluster to a fourth node is the same as the second/third nodes,
 kubectl scale --replicas=4 statefulset/confluence
 ```
 
-###### Cleaning up
+### Cleaning up
 
 After you have finished, you can completely tear down your cluster as follows:
 
