@@ -49,7 +49,7 @@ Most public Kubernetes-as-a-service platforms don't support shared, writable fil
 
 A cheaper option is to run a [single-node NFS server](https://console.cloud.google.com/marketplace/details/click-to-deploy-images/singlefs).
 
-To save costs, reduce the CPU to 1 x vCPU; and make sure it is created in the same zone as your Kubernetes cluster (`us-central1-a)
+To save costs, reduce the CPU to 1 x vCPU; and make sure it is created in the same zone as your Kubernetes cluster (`us-central1-a`)
 
 The deployment will take a few minutes to finish. Once it's deployed, you'll need to get the IP address of the NFS server (so that you can point your Confluence pods at it), so run the following command:
 
@@ -78,14 +78,14 @@ The YAML files in the `database` folder can be applied with a single command:
 kubectl apply -f database
 ```
 
-`config.yaml` is used to configure the name of the database, the admin password, and the location of the data files.
-`storage.yaml` defines a writable persistent volume for storing data.
-`service.yaml` creates a "ClusterIP" service, allowing each Confluence node to access the database on port 5432.
-`deployment.yaml` creates a single instance of postgres 11, using the persistent volume above. 
+* `config.yaml` is used to configure the name of the database, the admin password, and the location of the data files.
+* `storage.yaml` defines a writable persistent volume for storing data.
+* `service.yaml` creates a `ClusterIP` service, allowing each Confluence node to access the database on port 5432.
+* `deployment.yaml` creates a single instance of postgres 11, using the persistent volume above. 
 
 ### Deploy a load balancer service
 
-A service of type "LoadBalancer" sits in front of the Confluence nodes, and allows access to the cluster on http://<external IP address>
+A service of type `LoadBalancer` sits in front of the Confluence nodes, and allows access to the cluster on `http://<external IP address>`
 
 For testing purposes, it can be useful to ensure that your Confluence session remains on the same Confluence node, so we use `sessionAffinity: ClientIP` to stick sessions to the node that they started on.
 
